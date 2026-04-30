@@ -41,7 +41,7 @@ Avant utilisation.
 
 1. **Configuration** : Configuration du fichier config.ini
 2. **Playlists** : Création de playlists
-3. **RecalboxMirrorSD** : Création des répertoires pour le mode Recalbox
+3. **Outils** : Utilisation des scripts
 4. **Flash** : ESP32 firmware
 5. **MQTT** : Explication et fonctionnement
 6. **Telnet** : Terminal Telnet pour test
@@ -54,27 +54,30 @@ Vous devez avoir le fichier config.ini à la racine de la carte SD.
 Dans celui-ci vous pourrez configurer
 
 ```
+#Info
+info=0 #Affiche les infos au demarrage
+
 #Playlist
-playlist=TODO.txt (joue la playlist indiqué dans /playlist)
-random=true #a verifier
+playlist=TODO.txt #Joue la playlist indiqué dans /playlist
+random=1 #0 pour jouer la playlist par ordre, 1 pour jouer la playlist aleatoirement
 
 #Wifi & Bluetooth
-wifi_enabled=1 (0=Desactive le wifi, 1=Active le wifi. Laissez sur 1)
-wifi_ssid=monwifi (nom de votre reseau wifi)
-wifi_password=monpasse (mot de passe de votre reseau wifi)
-bluetooth_enabled=0 (0=Desactive le bluetooth, 1=Active le bluetooth. Laissez sur 0. Cela depends si vous avez des interferences, par exemple manette 8Bitdo Pro 3)
-bluetooth_name=ESP32-GIF (Nom Bluetooth)
+wifi_enabled=1 #0=Desactive le wifi, 1=Active le wifi. Laissez sur 1
+wifi_ssid=monwifi #Nom de votre reseau wifi
+wifi_password=monpasse #Mot de passe de votre reseau wifi
+bluetooth_enabled=0 #0=Desactive le bluetooth, 1=Active le bluetooth. Laissez sur 0. Cela depends si vous avez des interferences, par exemple manette 8Bitdo Pro 3
+bluetooth_name=ESP32-GIF #Nom Bluetooth
 
-wifi_static_enabled=1 (0=DHCP, 1=IP fixe. Preferez une IP fixe.)
-wifi_static_ip=192.168.20.240 (À renseigner seulement si wifi_static_enabled=1)
-wifi_gateway=192.168.20.1  (À renseigner seulement si wifi_static_enabled=1)
-wifi_subnet=255.255.255.0  (À renseigner seulement si wifi_static_enabled=1)
-wifi_dns1=1.1.1.1  (À renseigner seulement si wifi_static_enabled=1)
-wifi_dns2=8.8.8.8  (À renseigner seulement si wifi_static_enabled=1)
+wifi_static_enabled=1 #0=DHCP, 1=IP fixe. Preferez une IP fixe.
+wifi_static_ip=192.168.20.240 #À renseigner seulement si wifi_static_enabled=1
+wifi_gateway=192.168.20.1  #À renseigner seulement si wifi_static_enabled=1
+wifi_subnet=255.255.255.0  #À renseigner seulement si wifi_static_enabled=1
+wifi_dns1=1.1.1.1  #À renseigner seulement si wifi_static_enabled=1
+wifi_dns2=8.8.8.8  #À renseigner seulement si wifi_static_enabled=1
 
 #MQQT
-recalbox_ip=192.168.20.104 (Adresse IP fixe de votre Recalbox)
-
+recalbox_ip=192.168.20.104 #Adresse IP fixe de votre Recalbox
+mqtt_timeout=30 #Temps d'attente avant de lancer la playlist si MQQT ne reponds pas
 ```
 
 ## 2 - ▶️ Playlists
@@ -87,14 +90,21 @@ Vous pourrez choisir les dossiers à mettre dans votre playlist (par exemple les
 Si vous voulez tout mettre dans une playlist. Mettez "TODO".
 
 
-## 3 - 💾 RecalboxMirrorSD
+## 🛠️ - 💾 Outils
 
-Il permet de créer le dossier **systems** dans la carte SD.
-Il créera des dossiers vides des systèmes que vous avez dans le dossier roms de votre Recalbox.
-Vous devrez juste indiquer sur quel lettre se trouve votre carte SD (D:,E:, etc...). Juste la lettre suffit.
-Et mettre votre emplacement réseau du type \\192.168.1.10\Recalbox\roms
-Il créera 2 dossiers en plus, qui sont **default** et **favorites**.
-Pour chaque système et jeux. Vous devrez mettre un *.gif ou *.png avec le même nom.
+Deux Scripts sont à votre disposition.
+
+**extract_gamelist_images** : Extrait les images de vos dossiers medias et les renomme selon le path du gamelist.xml
+**convert_128x32** : Converti les images en 128x32
+
+L'ideal est de placer ces deux fichiers dans un repertoire pour avoir tout sous la main. Il copiera les images dans le dossier où se trouvent les scripts.
+La meilleure option pour le panneau est de faire un scrapping avec le type d'image **LOGO DETOURE** ou **MARQUEE** qui sont ideals pour le panneau LED.
+Une fois les images convertis. Copier tout les dossiers et coller tout dans /systems de votre carte SD.
+
+Vous trouverez un dossier avec tout les systemes et leur images déjà convertie.
+Vous aurez aussi un systeme nommé **default**. Si vous placez un fichier _default.gif ou _default.png sera celui par defaut si aucune image systeme est trouvée.
+Chaque systeme aura son propre fichier _default. Certains systemes (per exemple snes) peuvent contenir une image **Super Nintendo** ou **Super Famicom**.
+
 
 Exemple:
 
@@ -102,13 +112,13 @@ Exemple:
 RetroBoxLED SD Card/
 ├── systems/
 │   ├── neogeo/
-│   │   ├── neogeo.gif
-│   │   ├── neogeo.png
+│   │   ├── _default.gif
+│   │   ├── _default.png
 │   │   ├── mslug.gif
 │   │   ├── mslug.png
 │   ├── snes/
-│   │   ├── snes.gif
-│   │   ├── Super Mario World (Europe).png
+│   │   ├── _default.gif
+│   │   ├── SuperMarioWorld(Europe).png
 ```
 Par défaut les gifs sont prioritaires sur les png.
 
