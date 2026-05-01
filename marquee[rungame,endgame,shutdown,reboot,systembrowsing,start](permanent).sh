@@ -13,17 +13,17 @@ send_mqtt() {
 normalize_system() {
     local sys="$1"
     case "$sys" in
-        fbneo|fba|neogeo)  echo "neogeo" ;;
-        mame*)             echo "mame" ;;
-        mastersystem)      echo "mastersystem" ;;
-        megadrive|genesis) echo "megadrive" ;;
-        snes|sfc)          echo "snes" ;;
-        nes|fds)           echo "nes" ;;
-        gb)                echo "gb" ;;
-        gbc)               echo "gbc" ;;
-        gba)               echo "gba" ;;
-        psx)               echo "psx" ;;
-        n64)               echo "n64" ;;
+        #fbneo|fba|neogeo)  echo "neogeo" ;;
+        #mame*)             echo "mame" ;;
+        #mastersystem)      echo "mastersystem" ;;
+        #megadrive|genesis) echo "megadrive" ;;
+        #snes|sfc)          echo "snes" ;;
+        #nes|fds)           echo "nes" ;;
+        #gb)                echo "gb" ;;
+        #gbc)               echo "gbc" ;;
+        #gba)               echo "gba" ;;
+        #psx)               echo "psx" ;;
+        #n64)               echo "n64" ;;
         *)                 echo "$sys" ;;
     esac
 }
@@ -72,21 +72,30 @@ while true; do
             fi
 
             if [ -n "$game_path" ]; then
-                # Un jeu est sélectionné dans la liste
-                rom=$(basename "$game_path" | sed 's/\.[^.]*$//')
-                if [ -n "$system" ] && [ -n "$rom" ]; then
-                    # Envoyer uniquement si jeu ou système différent
-                    if [ "$rom" != "$LAST_ROM" ] || [ "$system" != "$LAST_SYSTEM" ]; then
+                # Verifier si c'est un dossier (sous-repertoire de roms)
+                if [ -d "$game_path" ]; then
+                    # C'est un sous-dossier, traiter comme un systeme
+                    echo "$(date '+%H:%M:%S') BROWSE subdir -> send system $system" >> "$LOG"
+                    if [ "$system" != "$LAST_SYSTEM" ] || [ -n "$LAST_ROM" ]; then
                         LAST_SYSTEM="$system"
-                        LAST_ROM="$rom"
-                        send_mqtt "game" "${system}/${rom}"
-                    else
-                        echo "$(date '+%H:%M:%S') BROWSE skipped (same game)" >> "$LOG"
+                        LAST_ROM=""
+                        send_mqtt "system" "$system"
+                    fi
+                else
+                    # C'est un fichier rom
+                    rom=$(basename "$game_path" | sed 's/\.[^.]*$//')
+                    if [ -n "$system" ] && [ -n "$rom" ]; then
+                        if [ "$rom" != "$LAST_ROM" ] || [ "$system" != "$LAST_SYSTEM" ]; then
+                            LAST_SYSTEM="$system"
+                            LAST_ROM="$rom"
+                            send_mqtt "game" "${system}/${rom}"
+                        else
+                            echo "$(date '+%H:%M:%S') BROWSE skipped (same game)" >> "$LOG"
+                        fi
                     fi
                 fi
             elif [ -n "$system" ]; then
                 # Pas de jeu sélectionné, on est sur un système
-                # Si on vient d une gamelist (LAST_ROM non vide), forcer l envoi
                 if [ "$system" != "$LAST_SYSTEM" ] || [ -n "$LAST_ROM" ]; then
                     LAST_SYSTEM="$system"
                     LAST_ROM=""
