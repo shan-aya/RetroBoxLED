@@ -142,11 +142,11 @@ Ce que fait MQTT c'est dire au ESP32 ce qu'il doit lancer.
 Voici un exemple
 ```
 1. Tu lances King of Fighters (mame/kof98)
-2. marquee[rungame,endgame,shutdown,reboot,systembrowsing,start](permanent).sh détecte → MQTT "mame/kof98"  
+2. marquee[rungame,endgame,systembrowsing,gamelistbrowsing,sleep,wakeup,stop,start](permanent).sh détecte → MQTT "mame/kof98"  
 3. ESP32 reçoit → /systems/mame/kof98.gif
 4. Pas de GIF ? → /systems/_defaults/_default.gif
 ```
-Le fichier [`marquee[rungame,endgame,shutdown,reboot,systembrowsing,start.sh]`](https://example.com)
+Le fichier marquee[rungame,endgame,systembrowsing,gamelistbrowsing,sleep,wakeup,stop,start](permanent).sh
 doit etre dans /recalbox/share/userscripts/ de votre Recalbox
 
 ## 6 - >_ Telnet
